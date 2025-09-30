@@ -1,0 +1,56 @@
+# Node / React Native
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+yarn.lock
+.expo/
+.expo-shared/
+*.expo.*
+*.log
+
+# iOS / macOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcworkspace
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.DS_Store
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+*.keystore
+
+# VSCode / IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Python / Flask
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env
+*.sqlite3
+static/
+uploads/
+
+# Misc
+*.swp
+*.tmp
+*.bak
+.DS_Store
+*.log
+*.cache
+
+# Build outputs
+dist/
+build/
