@@ -42,12 +42,12 @@ export default function TextChat() {
     <View style={commonStyles.container}>
       <Text style={commonStyles.header}>Text Chat</Text>
 
-      <TextInput style={commonStyles.input} placeholder="Enter text" value={input} onChangeText={setInput} />
+      <TextInput style={commonStyles.input} placeholder="Ask Anything" value={input} onChangeText={setInput} />
 
       {errorMessage ? <MessageBox type="error" message={errorMessage} /> : null}
 
-      <TouchableOpacity style={commonStyles.button} onPress={handleAction}>
-        <Text style={commonStyles.buttonText}>Run</Text>
+      <TouchableOpacity style={commonStyles.button} onPress={handleAction} disabled={loading}>
+        {loading ? <Loader visible={true} /> : <Text style={commonStyles.buttonText}>Go</Text>}
       </TouchableOpacity>
 
       {output ? <MessageBox type="success" message={output} /> : null}
@@ -60,9 +60,6 @@ export default function TextChat() {
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Loader */}
-      <Loader visible={loading} />
     </View>
   );
 }
