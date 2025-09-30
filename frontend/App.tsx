@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TextChat from "./app/text-chat";
+import TextChat from "./app/TextChat";
 import ImageGen from "./app/image-gen";
 import AudioTranscribe from "./app/audio-transcribe";
 import Multimodal from "./app/multimodal";
