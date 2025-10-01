@@ -1,8 +1,11 @@
 import axiosClient from "./axiosClient";
 
-export const askText = async (query: string) => {
+export const askText = async (query: string, sessionId: string) => {
   try {
-    const res = await axiosClient.post("/text/ask", { query });
+    const res = await axiosClient.post("/text/ask", {
+      query,
+      session_id: sessionId,
+    });
     return res.data;
   } catch (error: any) {
     console.error("askText Error:", error.response?.data || error.message);
@@ -24,7 +27,9 @@ export const transcribeAudio = async (file: any) => {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await axiosClient.post("/audio/transcribe", formData, { headers: { "Content-Type": "multipart/form-data" } });
+    const res = await axiosClient.post("/audio/transcribe", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return res.data;
   } catch (error: any) {
     console.error("transcribeAudio Error:", error.response?.data || error.message);

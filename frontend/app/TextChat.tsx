@@ -1,65 +1,108 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { askText } from "../utils/api";
 import { commonStyles } from "../styles/css";
-import { validateInput, createSchema } from "../utils/validate";
-import { MessageBox } from "../components/MessageBox";
-import { Loader } from "../components/Loader"; // <-- import Loader
+import { Loader } from "../components/Loader";
+import { askText } from "../utils/api";
+import { useSessionId } from "../utils/useSessionId";
 
 export default function TextChat() {
   const navigation = useNavigation<any>();
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false); // <-- loader state
+  const [messages, setMessages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const sessionId = useSessionId();
 
-  const handleAction = async () => {
-    const schema = createSchema("query");
-    const { valid, error } = await validateInput(schema, { query: input });
+  const flatListRef = useRef<FlatList>(null);
 
-    if (!valid) {
-      setErrorMessage(error || "Invalid input");
-      setOutput("");
-      return;
+  // ---------------- Auto-scroll whenever messages change ----------------
+  useEffect(() => {
+    if (flatListRef.current && messages.length > 0) {
+      flatListRef.current.scrollToEnd({ animated: true });
     }
+  }, [messages]);
 
-    setErrorMessage("");
+  // ---------------- Send message ----------------
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = input.trim();
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setLoading(true);
 
     try {
-      const res = await askText(input);
-      setOutput(res.answer);
+      const res = await askText(userMessage, sessionId); // pass session ID
+      setMessages((prev) => [...prev, res.answer || res]); // res can be string or { answer }
     } catch (error: any) {
-      console.error("TextChat Error:", error);
-      setOutput("Error: " + (error.response?.data?.message || error.message));
+      setMessages((prev) => [...prev, "Error: " + (error.message || "Unknown")]);
     } finally {
       setLoading(false);
     }
   };
 
+  // ---------------- Render each message ----------------
+  const renderMessage = ({ item, index }: { item: string; index: number }) => {
+    const isUser = index % 2 === 0;
+    return (
+      <View style={[commonStyles.messageBubble, isUser ? commonStyles.userBubble : commonStyles.assistantBubble]}>
+        <Text style={commonStyles.messageText}>{item}</Text>
+      </View>
+    );
+  };
+
   return (
-    <View style={commonStyles.container}>
-      <Text style={commonStyles.header}>Text Chat</Text>
+    <KeyboardAvoidingView
+      style={commonStyles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+    >
+      {/* Header */}
+      <Text style={commonStyles.header}>🤖 ChatAI</Text>
 
-      <TextInput style={commonStyles.input} placeholder="Ask Anything" value={input} onChangeText={setInput} />
+      {/* Messages */}
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderMessage}
+        contentContainerStyle={{ padding: 10, flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      />
 
-      {errorMessage ? <MessageBox type="error" message={errorMessage} /> : null}
+      {/* Typing indicator */}
+      {loading && <Text style={commonStyles.typingText}>Assistant is typing...</Text>}
 
-      <TouchableOpacity style={commonStyles.button} onPress={handleAction} disabled={loading}>
-        {loading ? <Loader visible={true} /> : <Text style={commonStyles.buttonText}>Go</Text>}
-      </TouchableOpacity>
+      {/* Input */}
+      <View style={commonStyles.inputRow}>
+        <TextInput
+          style={commonStyles.chatInput}
+          placeholder="Type a message..."
+          value={input}
+          onChangeText={setInput}
+          editable={!loading}
+          returnKeyType="send"
+          onSubmitEditing={() => {
+            if (input.trim().length > 0) handleSend();
+          }}
+        />
+        <TouchableOpacity
+          style={[commonStyles.sendButton, { opacity: input.trim().length === 0 || loading ? 0.5 : 1 }]}
+          onPress={handleSend}
+          disabled={input.trim().length === 0 || loading}
+        >
+          {loading ? <Loader visible={true} /> : <Text style={commonStyles.sendText}>Send</Text>}
+        </TouchableOpacity>
+      </View>
 
-      {output ? <MessageBox type="success" message={output} /> : null}
-
-      {/* Navigation Buttons */}
+      {/* Tabs */}
       <View style={commonStyles.row}>
         {["ImageGen", "AudioTranscribe", "Multimodal"].map((screen) => (
           <TouchableOpacity key={screen} style={commonStyles.tabButton} onPress={() => navigation.navigate(screen)}>
-            <Text>{screen}</Text>
+            <Text style={commonStyles.tabButtonText}>{screen}</Text>
           </TouchableOpacity>
         ))}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

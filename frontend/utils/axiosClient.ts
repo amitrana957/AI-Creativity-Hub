@@ -2,7 +2,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 
 const API_BASE = Constants.expoConfig?.extra?.API_BASE_URL || "http://localhost:8000";
-const axiosClient = axios.create({ baseURL: API_BASE, timeout: 10000 });
+const axiosClient = axios.create({ baseURL: API_BASE });
 
 axiosClient.interceptors.request.use(
   config => { console.log("Request:", config.url); return config; },

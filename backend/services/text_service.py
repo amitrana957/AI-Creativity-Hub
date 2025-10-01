@@ -1,28 +1,46 @@
-import time
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-import torch
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+import os
+from typing import Dict, List
 
-model_name = "google/flan-t5-small"
-# Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+# ---------------- Load .env variables ----------------
+load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+# ---------------- Initialize the Gemini model ----------------
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", api_key=GOOGLE_API_KEY)
+
+# ---------------- Session history store ----------------
+# Each session_id has its own conversation history
+conversation_histories: Dict[str, List[Dict[str, str]]] = {}
 
 
-def ask_text_model(query: str):
+# ---------------- Ask function ----------------
+def ask_text_model(user_input: str, session_id: str = "default") -> str:
     """
-    Generate an answer to a question using a closed-book QA model.
-    - query: the question string
+    Generate a response from Gemini with conversation history per session.
+
+    Args:
+        user_input (str): User prompt.
+        session_id (str): Identifier for session history.
+
+    Returns:
+        str: Model response.
     """
-    time.sleep(2)
+    # Initialize history for new sessions
+    if session_id not in conversation_histories:
+        conversation_histories[session_id] = []
 
-    # Prepare the input
-    input_text = f"Question: {query} Answer:"
-    inputs = tokenizer(input_text, return_tensors="pt")
+    history = conversation_histories[session_id]
 
-    # Generate the answer
-    with torch.no_grad():
-        outputs = model.generate(inputs["input_ids"], max_length=50)
+    # Add user input to history
+    history.append({"type": "human", "content": user_input})
 
-    # Decode the generated answer
-    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return answer.strip() or "Sorry, I could not find an answer."
+    # Call Gemini with full session history
+    response = llm.invoke(history)
+    ai_text = response.content.strip()
+
+    # Add AI response to history
+    history.append({"type": "ai", "content": ai_text})
+
+    return ai_text

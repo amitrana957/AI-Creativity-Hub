@@ -9,12 +9,16 @@ def ask_question():
     try:
         data = request.get_json(force=True)
         query = data.get("query")
+        session_id = data.get("session_id")
 
-        # Ensure query is provided
+        # Validate input
         if not query:
             return jsonify({"error": "'query' parameter is required"}), 400
+        if not session_id:
+            return jsonify({"error": "'session_id' parameter is required"}), 400
 
-        answer = ask_text_model(query)
+        # Call text model with session-based memory
+        answer = ask_text_model(query, session_id)
         return jsonify({"answer": answer})
 
     except Exception as e:
