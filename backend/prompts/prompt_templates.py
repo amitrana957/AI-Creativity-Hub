@@ -16,7 +16,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 from langchain.prompts.few_shot import FewShotPromptTemplate
-from models.gemini_model import gemini_llm
+from models import gemini_llm
 
 # -------------------------------
 # BASIC PROMPT TEMPLATES

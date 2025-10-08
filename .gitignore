@@ -42,6 +42,7 @@ __pycache__/
 *.sqlite3
 static/
 uploads/
+db/
 
 # Misc
 *.swp
