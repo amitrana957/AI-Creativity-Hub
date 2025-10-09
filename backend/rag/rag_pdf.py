@@ -4,6 +4,7 @@ from langchain_community.document_loaders import UnstructuredPDFLoader, PyPDFLoa
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from models import hf_embeddings, gemini_llm
+from lib import pretty_print
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -11,41 +12,15 @@ from langchain.prompts import (
 )
 
 
-def p(
-    msg, color="cyan", prefix="=====================", suffix="====================="
-):
-    """
-    Pretty-print a message in the terminal with colors and visible separators.
-
-    Parameters:
-    - msg: str → the content to print
-    - color: str → text color (red, green, yellow, blue, magenta, cyan, white)
-    - prefix: str → text printed before the message
-    - suffix: str → text printed after the message
-    """
-    # ANSI color codes
-    colors = {
-        "red": "\033[91m",
-        "green": "\033[92m",
-        "yellow": "\033[93m",
-        "blue": "\033[94m",
-        "magenta": "\033[95m",
-        "cyan": "\033[96m",
-        "white": "\033[97m",
-        "reset": "\033[0m",
-    }
-
-    color_code = colors.get(color, colors["cyan"])
-
-    print(f"\n\n{color_code}{prefix}\n{msg}\n{suffix}{colors['reset']}\n\n")
-
-
 # ---------------- Paths ----------------
-DB_FOLDER = Path.cwd() / "db"
+BASE_DIR = Path(__file__).resolve().parent.parent  # adjust .parent/.parent as needed
+
+PDF_PATH = BASE_DIR / "data" / "qa.pdf"
+
+DB_FOLDER = BASE_DIR / "db" / "pdf"
+
 PROCESSED_FOLDER = DB_FOLDER / "processed"
 PROCESSED_FOLDER.mkdir(parents=True, exist_ok=True)
-
-PDF_PATH = Path.cwd() / "rag" / "data" / "qa.pdf"
 
 # ---------------- Initialize vector DB if exists ----------------
 vector_db = (
@@ -237,9 +212,6 @@ def llm_answer(query: str, top_chunks, llm=gemini_llm) -> str:
 
 ingest_pdf(PDF_PATH)
 
-user_question = "Who is brain and what does he do?"
-user_question = "What time does Brian arrive at work every morning?"
-user_question = "What is Brian doing at 7.30 today?"
 user_question = "What time does Brian usually get up?"
 query_vector = hf_embeddings.embed_query(user_question)
 
@@ -251,4 +223,4 @@ chunks = retrieve_top_chunks(query_vector, k=2)
 
 final_answer = llm_answer(query=user_question, top_chunks=chunks, llm=gemini_llm)
 
-p(f"Question: {user_question}\n\nAnswer: {final_answer}")
+pretty_print(f"Question: {user_question}\n\nAnswer: {final_answer}")

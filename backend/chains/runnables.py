@@ -1,5 +1,5 @@
 from langchain.prompts import ChatPromptTemplate
-from utils import DebugRunnable
+from lib import DebugRunnable
 from models import gemini_llm
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import (

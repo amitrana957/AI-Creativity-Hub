@@ -5,7 +5,7 @@ from langchain_chroma import Chroma
 from models import hf_embeddings
 
 # 1. Load PDF
-pdf_path = Path("rag/data/qa.pdf")
+pdf_path = Path(__file__).parent.parent / "data" / "qa.pdf"
 documents = UnstructuredPDFLoader(str(pdf_path)).load()
 
 # 2. Split PDF into chunks
@@ -19,7 +19,7 @@ for i, chunk in enumerate(chunks):
 
 # 4. Store chunks in Chroma vector DB
 vector_db = Chroma.from_documents(
-    chunks, embedding=hf_embeddings, persist_directory="db/db"
+    chunks, embedding=hf_embeddings, persist_directory="db/basic"
 )
 
 # 5. Take user question

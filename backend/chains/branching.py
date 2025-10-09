@@ -1,18 +1,8 @@
 from langchain_core.runnables import RunnableBranch, RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.output_parser import StrOutputParser
+from lib import DebugRunnable
 from models import gemini_llm
-
-
-# -----------------------------
-# Debug helper classes
-# -----------------------------
-def DebugRunnable(name, color="\033[1;34m"):  # default blue
-    """Wraps a Runnable to print input and output with colors."""
-    reset = "\033[0m"
-    return RunnableLambda(
-        lambda x: (print(f"{color}[DEBUG] {name} INPUT:{reset} {x}") or x)
-    )
 
 
 def DebugCondition(name, condition_fn, color="\033[1;33m"):  # yellow
