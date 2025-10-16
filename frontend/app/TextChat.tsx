@@ -57,9 +57,6 @@ export default function TextChat() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
-      {/* Header */}
-      <Text style={commonStyles.header}>🤖 ChatAI</Text>
-
       {/* Messages */}
       <FlatList
         ref={flatListRef}
@@ -93,15 +90,6 @@ export default function TextChat() {
         >
           {loading ? <Loader visible={true} /> : <Text style={commonStyles.sendText}>Send</Text>}
         </TouchableOpacity>
-      </View>
-
-      {/* Tabs */}
-      <View style={commonStyles.row}>
-        {["ImageGen", "AudioTranscribe", "Multimodal"].map((screen) => (
-          <TouchableOpacity key={screen} style={commonStyles.tabButton} onPress={() => navigation.navigate(screen)}>
-            <Text style={commonStyles.tabButtonText}>{screen}</Text>
-          </TouchableOpacity>
-        ))}
       </View>
     </KeyboardAvoidingView>
   );
