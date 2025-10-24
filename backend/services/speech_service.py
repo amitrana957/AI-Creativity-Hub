@@ -6,13 +6,13 @@ from TTS.api import TTS
 from pydub import AudioSegment
 from models import gemini_llm
 from lib.utils import pretty_print
-import whisper  # pip install openai-whisper
+import whisper
 
 # === Initialize TTS model (Coqui TTS) ===
 tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False)
 
 # === Initialize Whisper model for STT ===
-whisper_model = whisper.load_model("base")  # tiny, base, small, medium, large
+whisper_model = whisper.load_model("base")
 
 
 # === Generate story using LLM ===
