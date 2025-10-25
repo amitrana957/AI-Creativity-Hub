@@ -1,4 +1,4 @@
-from typing_extensions import TypedDict
+from typing import TypedDict
 import string
 from langgraph.graph import StateGraph, END
 import random
