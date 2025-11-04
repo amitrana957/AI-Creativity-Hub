@@ -2,7 +2,7 @@ from pathlib import Path
 from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from models import hf_embeddings
+from models import hf_embeddings, gemini_llm
 
 # 1. Load PDF
 pdf_path = Path(__file__).parent.parent / "data" / "qa.pdf"
@@ -37,3 +37,23 @@ for i, chunk in enumerate(top_chunks, 1):
     print(chunk.page_content[:500])
     print("Metadata:", chunk.metadata)
     print()
+
+# 9. Combine retrieved chunks into context
+context = "\n\n".join([chunk.page_content for chunk in top_chunks])
+
+# 10. Create prompt
+prompt = f"""You are a helpful assistant. Use the context below to answer the user's question truthfully.
+If the answer is not in the document, say "Information not available in the document."
+
+Context:
+{context}
+
+Question: {user_question}
+
+Answer:"""
+
+# 11. Get response from LLM
+response = gemini_llm.invoke(prompt)
+
+print("\n--- FINAL ANSWER ---")
+print(response.content)
