@@ -15,7 +15,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     api_key=GOOGLE_API_KEY,
-    model_kwargs={"system_instruction": "You are a helpful assistant..."},
+    model_kwargs={"system_instruction": "You are a helpful assistant and please remember users past history in the conversation."},
 )
 
 
