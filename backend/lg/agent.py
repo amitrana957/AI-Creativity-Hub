@@ -1,69 +1,40 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 from dotenv import load_dotenv
-from langchain.tools import tool
-from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.graph import StateGraph, START, END, add_messages
+from langgraph.graph import StateGraph, START, END, MessagesState
 from langgraph.checkpoint.memory import MemorySaver
-from typing import TypedDict, Annotated
-from langchain.schema.messages import HumanMessage
 
-# ------------------- Setup -------------------
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    api_key=GOOGLE_API_KEY,
-    model_kwargs={"system_instruction": "You are a helpful assistant and please remember users past history in the conversation."},
-)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 
-# ------------------- Tools -------------------
-@tool
-def add(a, b):
-    """Add two numbers"""
-    return a + b
+def llm_calling(state: MessagesState):
+    result = llm.invoke(state["messages"])
+    return {"messages": [("assistant", result.content)]}
 
 
-@tool
-def multiply(a, b):
-    """Multiply two numbers"""
-    return a * b
-
-
-tools = [add, multiply]
-llm_with_tools = llm.bind_tools(tools)
-
-
-# ------------------- Agent State -------------------
-class AgentState(TypedDict):
-    messages: Annotated[list, add_messages]
-
-
-# ------------------- Node Logic -------------------
-def tool_calling_llm(state: AgentState) -> AgentState:
-    response = llm_with_tools.invoke(state["messages"])
-    return {"messages": state["messages"] + [response]}
-
-
-# ------------------- Graph Building -------------------
 memory = MemorySaver()
-builder = StateGraph(AgentState)
-builder.add_node("tool_calling_llm", tool_calling_llm)
-builder.add_node("tools", ToolNode(tools))
 
-builder.add_edge(START, "tool_calling_llm")
-builder.add_conditional_edges("tool_calling_llm", tools_condition)
-builder.add_edge("tools", "tool_calling_llm")
+builder = StateGraph(MessagesState)
+builder.add_node("llm", llm_calling)
+builder.add_edge(START, "llm")
+builder.add_edge("llm", END)
 
-graph = builder.compile()
+graph = builder.compile(checkpointer=memory)
 
-config = {"configurable": {"thread_id": "uniq_"}}
+# config = {"configurable": {"thread_id": "chat_1"}}
+# response = graph.invoke({"messages": [("human", "Hello, I'm Amit")]}, config=config)
+# print(response["messages"][-1].pretty_print())
+# response = graph.invoke(
+#     {"messages": [("human", "What do you know about me so far ?")]},
+#     config=config,
+# )
+# print(response["messages"][-1].pretty_print())
 
-response = graph.invoke({"messages": [HumanMessage("Hello, I'm Amit.")]}, config=config)
-print(response["messages"][-1].content)
 
-
-response = graph.invoke({"messages": [HumanMessage("What is my name?")]}, config=config)
-print(response["messages"][-1].content)
+# to be used in flask endpoint
+def ask_text_model(user_input: str, session_id: str = "default"):
+    config = {"configurable": {"thread_id": session_id}}
+    response = graph.invoke({"messages": [("human", user_input)]}, config=config)
+    return response["messages"][-1].content

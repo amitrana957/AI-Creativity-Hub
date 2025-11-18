@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.text_service import ask_text_model
+from lg.agent import ask_text_model
 import traceback
 
 text_bp = Blueprint("text_bp", __name__)
