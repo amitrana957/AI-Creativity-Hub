@@ -1,146 +1,147 @@
-# AI-Creativity-Hub
+# AI Creativity Hub
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://www.python.org/)
-[![React Native](https://img.shields.io/badge/React_Native-Expo-blue)](https://reactnative.dev/)
+### Agentic AI · RAG · Speech · Mobile-first Architecture
 
-**AI-Creativity-Hub** is a multi-modal AI platform that allows users to interact with AI in various ways:
+AI Creativity Hub is a **mobile-first, agentic AI system** designed to demonstrate how Large Language Models (LLMs) can be orchestrated into **interactive, narrative-driven user experiences**.
 
-- **Text Chat** – Ask questions and get AI-generated answers
-- **Image Generation** – Generate images from text prompts
-- **Audio Transcription** – Convert audio to text
-- **Multimodal Tasks** – Combine text, image, and audio inputs for AI processing
-
-The project is a **full-stack solution** with a **React Native frontend** and a **Python Flask backend**.
+This repository is intentionally scoped to showcase **architecture, AI orchestration, and system design**, rather than production polish.
 
 ---
 
-## Features
+## 🎯 Problem This Project Solves
 
-- Cross-platform mobile app (iOS & Android)
-- Modular AI services: text, image, audio, multimodal
-- Clean and reusable UI with a professional design
-- Easily extendable backend for new AI features
+Most AI demos stop at **prompt → response**.
+
+This project explores:
+
+- How to build **agentic AI systems** with conversational memory
+- How to combine **LLMs, memory, and speech** into real user workflows
+- How AI can support **narrative-based and personalized experiences**, especially for education and storytelling
 
 ---
 
-## Tech Stack
+## 🧠 Key Capabilities
 
-**Frontend:**
+### 1️⃣ Conversational AI with Memory
+
+- Remembers user-provided context (name, preferences)
+- Demonstrates **short-term conversational memory**
+- Enables more natural and personalized interactions
+
+### 2️⃣ Text → Speech (TTS)
+
+- User enters a topic
+- LLM generates a short story
+- Story is converted into audio
+- Audio is played back inside the mobile app
+
+### 3️⃣ Speech → Text (STT)
+
+- User uploads audio
+- Backend transcribes speech into text
+- Can be reused for voice-driven AI workflows
+
+### 4️⃣ Modular Agentic Design
+
+- LLM orchestration
+- Memory handling
+- Speech services
+- UI flows
+
+All components are **loosely coupled** and easy to extend.
+
+---
+
+## 🧱 High-Level Architecture
+
+```
+React Native Mobile App
+        ↓
+Backend API Layer (Python / Flask)
+        ↓
+LLM Orchestration (Gemini)
+        ↓
+Memory Layer (conversation context)
+        ↓
+Speech Services (TTS / STT)
+```
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
 
 - React Native (Expo)
-- React Navigation
 - TypeScript
 
-**Backend:**
+### Backend
 
 - Python 3.10+
 - Flask
-- Flask-RESTful (optional)
-- Pydantic (optional, for data validation)
+- Gemini LLM
+- Pluggable memory strategy
 
 ---
 
-## Setup & Installation
+## 📸 Demo Screenshots
 
-### Frontend (React Native)
+> Images are placed inside the `/screenshots` folder and ordered to reflect the user journey.
 
-```bash
-cd frontend
-npm install
-npm start
-```
+### 01 — Text Input for Story Generation
 
-### Backend (Flask)
+![TTS Input](screenshots/01_tts_input.png)
 
-```bash
-cd backend
-python -m venv venv
+### 02 — Story Generated with Audio Playback (TTS)
 
-# Activate virtual environment
-# Linux/macOS
-source venv/bin/activate
-# Windows
-venv\Scriptsctivate
+![Story Generated](screenshots/02_tts_story_generated.png)
 
-pip install -r requirements.txt
+### 03 — Speech to Text (STT)
 
-# Set environment variables
-# Linux/macOS
-export FLASK_APP=main.py
-export FLASK_ENV=development
-# Windows (PowerShell)
-# $env:FLASK_APP="main.py"
-# $env:FLASK_ENV="development"
+![STT](screenshots/03_stt_transcription.png)
 
-flask run
-```
+### 04 — Conversational AI with Memory
+
+![Chat Memory](screenshots/04_chat_memory.png)
 
 ---
 
-## Usage
+## 🧩 Why This Matters (Architect Perspective)
 
-1. Start the backend server (`flask run`)
-2. Start the frontend app using Expo (`npm start`)
-3. Use the app to:
-   - Chat with AI
-   - Generate images from prompts
-   - Transcribe audio
-   - Perform multimodal AI tasks
+This project demonstrates:
 
----
+- Moving from **LLM APIs** to **AI-powered systems**
+- Designing **agent-like behavior** using memory and orchestration
+- Integrating AI into **real product flows**
+- Building **AI-native mobile experiences**
 
-## API Endpoints (Flask)
+These patterns are directly applicable to:
 
-- **POST /api/text-chat**
-
-  - **Input:** JSON `{ "text": "your question here" }`
-  - **Output:** JSON `{ "answer": "AI response" }`
-
-- **POST /api/image-gen**
-
-  - **Input:** JSON `{ "prompt": "image description" }`
-  - **Output:** JSON `{ "image_url": "https://..." }`
-
-- **POST /api/audio-transcribe**
-
-  - **Input:** Multipart/form-data audio file
-  - **Output:** JSON `{ "transcription": "transcribed text" }`
-
-- **POST /api/multimodal**
-  - **Input:** JSON `{ "text": "...", "image": "...", "audio": "..." }`
-  - **Output:** JSON `{ "result": "AI output" }`
+- Educational AI platforms
+- Narrative-driven learning
+- Conversational assistants
+- Agent-based systems
 
 ---
 
-## Example API Requests (cURL)
+## 🚀 Future Extensions
 
-```bash
-# Text Chat
-curl -X POST http://localhost:5000/api/text-chat -H "Content-Type: application/json" -d '{"text": "Hello AI!"}'
-
-# Image Generation
-curl -X POST http://localhost:5000/api/image-gen -H "Content-Type: application/json" -d '{"prompt": "A futuristic city skyline"}'
-
-# Audio Transcription
-curl -X POST http://localhost:5000/api/audio-transcribe -F "file=@/path/to/audio.mp3"
-
-# Multimodal
-curl -X POST http://localhost:5000/api/multimodal -H "Content-Type: application/json" -d '{"text": "Describe this image", "image": "image_url_here"}'
-```
+- Long-term memory using vector databases
+- RAG over domain-specific content
+- Multi-agent workflows (planner / narrator / evaluator)
+- Streaming responses for real-time UX
+- Cloud deployment and scalability
 
 ---
 
-## Contributing
+## ⚠️ Notes
 
-Contributions are welcome! Please submit pull requests or open issues for bugs/features.
-
-- Follow standard GitHub workflow: Fork → Branch → PR → Merge
-- Ensure code is clean, readable, and commented
-- Add tests for any new features
+- This project is **not intended as a production-ready system**
+- It is designed to demonstrate **architecture, AI workflows, and system thinking**
+- Most production work I’ve done is under NDA; this repo recreates those patterns in a simplified, explainable form
 
 ---
 
-## License
+## 📄 License
 
 MIT License
